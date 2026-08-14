@@ -626,6 +626,30 @@
 				y: (key.y + (key.height || 1) / 2) * UNIT
 			};
 		}
+		function convexHull(pts) {
+			if (!pts || pts.length <= 2) { return pts ? pts.slice() : []; }
+			var sorted = pts.slice().sort(function(a, b) {
+				return (a.x === b.x) ? (a.y - b.y) : (a.x - b.x);
+			});
+			function cross(o, a, b) {
+				return (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+			}
+			function build(list) {
+				var hull = [];
+				for (var i = 0; i < list.length; i++) {
+					while (hull.length >= 2 && cross(hull[hull.length - 2], hull[hull.length - 1], list[i]) < 0) {
+						hull.pop();
+					}
+					hull.push(list[i]);
+				}
+				return hull;
+			}
+			var lower = build(sorted);
+			var upper = build(sorted.slice().reverse());
+			lower.pop();
+			upper.pop();
+			return lower.concat(upper);
+		}
 		function offsetPolygon(pts, dist) {
 			if (!dist || pts.length < 2) { return pts; }
 			var n = pts.length, i, cx = 0, cy = 0;
@@ -689,10 +713,16 @@
 			});
 			var lines = [];
 			Object.keys(byZone).forEach(function(z) {
-				var items = byZone[z].sort(function(a, b) { return a.index - b.index; });
+				var settings = ($scope.meta && $scope.meta._zones && $scope.meta._zones[z]) || {};
+				var items = byZone[z].slice();
+				if (settings.shape === "path") {
+					items.sort(function(a, b) { return a.index - b.index; });
+				}
 				if (items.length < 2) { return; }
 				var pts = items.map(function(item) { return item.pt; });
-				var settings = ($scope.meta && $scope.meta._zones && $scope.meta._zones[z]) || {};
+				if (settings.shape !== "path") {
+					pts = convexHull(pts);
+				}
 				var offsetMm = parseFloat(settings.offset);
 				var filletMm = parseFloat(settings.fillet);
 				if (isNaN(offsetMm)) { offsetMm = 0; }
@@ -725,9 +755,10 @@
 			if (!$scope.meta._zones) { $scope.meta._zones = {}; }
 			if (!$scope.keyboard.meta._zones) { $scope.keyboard.meta._zones = $scope.meta._zones; }
 			var z = String(zone);
-			if (!$scope.meta._zones[z]) { $scope.meta._zones[z] = { fillet: 0, offset: 0 }; }
+			if (!$scope.meta._zones[z]) { $scope.meta._zones[z] = { fillet: 0, offset: 0, shape: "convex" }; }
 			if ($scope.meta._zones[z].offset == null) { $scope.meta._zones[z].offset = 0; }
 			if ($scope.meta._zones[z].fillet == null) { $scope.meta._zones[z].fillet = 0; }
+			if (!$scope.meta._zones[z].shape) { $scope.meta._zones[z].shape = "convex"; }
 			return $scope.meta._zones[z];
 		};
 		$scope.updateZoneSettings = function() {
