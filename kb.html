@@ -26,7 +26,20 @@ All rights reserved.
     border-style: solid !important;
     border-width: 1px !important;
   }
-  #keyboard .cad-corner .keylabels { font-weight: bold; }
+  #keyboard .cad-corner .keylabels,
+  #keyboard .cad-corner .keylabel,
+  #keyboard .cad-corner .keylabel > div {
+    font-weight: bold;
+    overflow: visible !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+    font-size: 11px !important;
+    line-height: 1.1em !important;
+    max-height: none !important;
+  }
+  #keyboard.markers-below .key.cad-corner { z-index: 1; }
+  #keyboard.markers-below svg.zone-overlay { z-index: 2; }
+  #keyboard.markers-hidden .key.cad-corner { visibility: hidden; }
   /* Same origin as key.rect: keyboard-bg content box (after 9px padding) */
   svg.zone-overlay {
     position: absolute;
@@ -204,6 +217,12 @@ Nav Bar / Header
     <button type="button" class="btn btn-default" ng-class="{disabled:!canCopy()}" ng-click="copy()"><i class="fa fa-copy"></i> Copy</button>
     <button type="button" class="btn btn-default" ng-class="{disabled:!canPaste()}" ng-click="paste()"><i class="fa fa-paste"></i> Paste</button>
   </div>
+  <div class="btn-group">
+    <button type="button" class="btn btn-default" ng-click="cycleMarkerLayer()"
+            title="Cycle outline markers: on top of keys, behind keys, or hidden (outline stays).">
+      <i class="fa fa-eye"></i> {{markerLayerLabel()}}
+    </button>
+  </div>
   <div class="btn-group" ng-hide="!user || !user.id || !currentGist || isStarred">
     <button type="button" class="btn btn-default" ng-click="setGistStar(currentGist, true)" ><i class="fa fa-star-o"></i> Star</button>
   </div>
@@ -238,6 +257,7 @@ Nav Bar / Header
   Main Keyboard Preview/Editor area
   ************************************************-->
   <div id="keyboard" ng-cloak tabindex="0"
+     ng-class="{'markers-below': markerLayer==='below', 'markers-hidden': markerLayer==='hidden'}"
      ui-keydown="{ left:'moveKeys(-moveStep,0,$event)',
                  right:'moveKeys(moveStep,0,$event)',
                  up:'moveKeys(0,-moveStep,$event)',
@@ -670,9 +690,9 @@ Nav Bar / Header
     <div id="zonesettings" ng-class="{hidden:selTab!=6}">
       <form class="form-horizontal col-sm-12 col-md-10 col-lg-8">
         <p class="help-block">
-          Markers wrap into a <strong>solid outer shape</strong> (convex hull) — add one
-          on the side and it grows the blob, it does not make a star. Use
-          <em>Follow order</em> only if you need a concave / L-shaped path.
+          <strong>Outer wrap</strong> follows the markers, including dents (not just a
+          rubber-band around the outside). Default offset is 16mm, rounding 6mm — both
+          are saved in Raw data as <code>_zones</code>.
         </p>
         <div ng-show="usedZones().length==0" class="alert alert-info">
           No corners yet. Use <strong>Add Corner</strong> to start a zone.

@@ -139,6 +139,9 @@ var $serial = (typeof(exports) !== 'undefined') ? exports : {};
 			}
 		}
 		key.labels[4] = $serial.cornerLabel(key.cadZone, key.cadIndex);
+		if (!key.default) { key.default = { textColor: "#ffffff", textSize: 2 }; }
+		key.default.textColor = key.default.textColor || "#ffffff";
+		if (!key.default.textSize || key.default.textSize > 2) { key.default.textSize = 2; }
 		key.width2 = key.width;
 		key.height2 = key.height;
 		key.x2 = key.y2 = 0;

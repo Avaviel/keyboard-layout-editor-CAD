@@ -6,12 +6,18 @@
 	function toJsonPretty(obj) {
 		var res = [];
 		obj.forEach(function(elem,ndx) {
-			// We don't want CSS & notes in the Raw Data editor; they have their
-			// own editors, and inclusion in the raw data tab just clutters it up.
-			// Other metadata isn't too bad, but doesn't really offer any benefit.
-			if(ndx > 0 || (elem instanceof Array)) {
-				res.push($serial.toJsonL(elem));
+			// Keep name + zone CAD settings in raw data. Skip CSS/notes (own tabs).
+			if(ndx === 0 && elem && !(elem instanceof Array)) {
+				var slim = {};
+				if(elem.name) { slim.name = elem.name; }
+				if(elem.author) { slim.author = elem.author; }
+				if(elem._zones) { slim._zones = elem._zones; }
+				if(Object.keys(slim).length) {
+					res.push($serial.toJsonL(slim));
+				}
+				return;
 			}
+			res.push($serial.toJsonL(elem));
 		});
 		return res.join(",\n")+"\n";
 	}
@@ -78,6 +84,17 @@
 		$scope.rotateStep = 15;
 		$scope.cornerZones = [1, 2, 3, 4, 5, 6, 7, 8];
 		$scope.lastCornerZone = 1;
+		$scope.markerLayer = "above";
+		$scope.cycleMarkerLayer = function() {
+			var order = ["above", "below", "hidden"];
+			var i = order.indexOf($scope.markerLayer);
+			$scope.markerLayer = order[(i + 1) % order.length];
+		};
+		$scope.markerLayerLabel = function() {
+			if ($scope.markerLayer === "below") { return "Markers: Behind"; }
+			if ($scope.markerLayer === "hidden") { return "Markers: Hidden"; }
+			return "Markers: Top";
+		};
 
 		var zonePalette = ["#e91e63", "#2196f3", "#4caf50", "#ff9800", "#9c27b0", "#00bcd4", "#795548", "#607d8b"];
 		$scope.zoneColor = function(zone) {
@@ -665,6 +682,53 @@
 			upper.pop();
 			return lower.concat(upper);
 		}
+		function pointInPoly(p, poly) {
+			var inside = false;
+			for (var i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+				var xi = poly[i].x, yi = poly[i].y, xj = poly[j].x, yj = poly[j].y;
+				if (((yi > p.y) !== (yj > p.y)) && (p.x < (xj - xi) * (p.y - yi) / ((yj - yi) || 1e-12) + xi)) {
+					inside = !inside;
+				}
+			}
+			return inside;
+		}
+		function concaveHull(pts, maxEdge) {
+			var hull = convexHull(pts);
+			if (hull.length < 3) { return hull; }
+			function pid(p) { return Math.round(p.x * 20) + ":" + Math.round(p.y * 20); }
+			var used = {};
+			hull.forEach(function(p) { used[pid(p)] = true; });
+			var interior = pts.filter(function(p) { return !used[pid(p)]; });
+			var guard = 0;
+			while (interior.length && guard++ < pts.length * 5) {
+				var bestI = -1, bestJ = -1, bestScore = Infinity;
+				for (var i = 0; i < hull.length; i++) {
+					var a = hull[i], b = hull[(i + 1) % hull.length];
+					var abx = b.x - a.x, aby = b.y - a.y;
+					var elen = Math.sqrt(abx * abx + aby * aby);
+					if (elen < maxEdge) { continue; }
+					for (var j = 0; j < interior.length; j++) {
+						var p = interior[j];
+						if (!pointInPoly(p, hull)) { continue; }
+						var t = ((p.x - a.x) * abx + (p.y - a.y) * aby) / (elen * elen || 1);
+						if (t <= 0.08 || t >= 0.92) { continue; }
+						var qx = a.x + t * abx, qy = a.y + t * aby;
+						var d = Math.sqrt((p.x - qx) * (p.x - qx) + (p.y - qy) * (p.y - qy));
+						if (d > elen * 0.7) { continue; }
+						var score = d;
+						if (score < bestScore) {
+							bestScore = score;
+							bestI = i;
+							bestJ = j;
+						}
+					}
+				}
+				if (bestI < 0) { break; }
+				hull.splice(bestI + 1, 0, interior[bestJ]);
+				interior.splice(bestJ, 1);
+			}
+			return hull;
+		}
 		function offsetPolygon(pts, dist) {
 			if (!dist || pts.length < 2) { return pts; }
 			var n = pts.length, i, cx = 0, cy = 0;
@@ -736,7 +800,8 @@
 				if (items.length < 2) { return; }
 				var pts = items.map(function(item) { return item.pt; });
 				if (settings.shape !== "path") {
-					pts = convexHull(pts);
+					// Outer wrap: concave hull so interior markers pull the outline in
+					pts = concaveHull(pts, 3 * 54);
 				}
 				var offsetMm = parseFloat(settings.offset);
 				var filletMm = parseFloat(settings.fillet);
@@ -770,9 +835,9 @@
 			if (!$scope.meta._zones) { $scope.meta._zones = {}; }
 			if (!$scope.keyboard.meta._zones) { $scope.keyboard.meta._zones = $scope.meta._zones; }
 			var z = String(zone);
-			if (!$scope.meta._zones[z]) { $scope.meta._zones[z] = { fillet: 0, offset: 0, shape: "convex" }; }
-			if ($scope.meta._zones[z].offset == null) { $scope.meta._zones[z].offset = 0; }
-			if ($scope.meta._zones[z].fillet == null) { $scope.meta._zones[z].fillet = 0; }
+			if (!$scope.meta._zones[z]) { $scope.meta._zones[z] = { fillet: 6, offset: 16, shape: "convex" }; }
+			if ($scope.meta._zones[z].offset == null) { $scope.meta._zones[z].offset = 16; }
+			if ($scope.meta._zones[z].fillet == null) { $scope.meta._zones[z].fillet = 6; }
 			if (!$scope.meta._zones[z].shape) { $scope.meta._zones[z].shape = "convex"; }
 			return $scope.meta._zones[z];
 		};
@@ -1504,15 +1569,15 @@
 			$scope.lastCornerZone = zone;
 			var index = $scope.nextCornerIndex(zone);
 			$scope.addKey({
-				width: 0.5,
-				height: 0.5,
-				width2: 0.5,
-				height2: 0.5,
+				width: 0.75,
+				height: 0.75,
+				width2: 0.75,
+				height2: 0.75,
 				decal: true,
 				cadZone: zone,
 				cadIndex: index,
 				color: $scope.zoneColor(zone),
-				default: { textColor: "#ffffff", textSize: 3 },
+				default: { textColor: "#ffffff", textSize: 2 },
 				textColor: [],
 				labels: ["", "", "", "", $serial.cornerLabel(zone, index)]
 			});
