@@ -41,26 +41,32 @@ All rights reserved.
   }
   #keyboard.markers-hidden .key.cad-corner { visibility: hidden; }
   #keyboard.markers-hidden svg.zone-overlay { opacity: 1; }
-  .cad-site-links {
-    background: #fff8e1;
-    border-bottom: 2px solid #f0ad4e;
-    padding: 8px 12px;
-    text-align: center;
-    font-size: 14px;
-    line-height: 1.6;
+  #wrap { margin-bottom: 0; padding-bottom: 16px; }
+  #footer { height: auto; min-height: 70px; padding: 16px 0; }
+  .cad-companion {
+    float: left;
+    max-width: 520px;
+    margin: 0 16px 12px 0;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #f8f8f8;
+    text-align: left;
+    font-size: 13px;
+    line-height: 1.45;
     -webkit-user-select: text;
     user-select: text;
   }
-  .cad-site-links-inner {
+  .cad-companion p { margin: 0 0 8px 0; color: #555; }
+  .cad-companion-links {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
     gap: 6px 0;
   }
-  .cad-site-links a {
+  .cad-companion a.cad-btn {
     display: inline-block;
-    padding: 4px 12px;
+    padding: 3px 10px;
     border: 1px solid #337ab7;
     border-radius: 4px;
     background: #fff;
@@ -68,21 +74,10 @@ All rights reserved.
     font-weight: 700;
     text-decoration: none;
   }
-  .cad-site-links a:hover { background: #e7f1fa; }
-  .cad-site-links a.here {
-    background: #337ab7;
-    color: #fff;
-  }
-  .cad-site-links a.here:hover { background: #286090; color: #fff; }
-  .cad-site-links .arrow {
-    display: inline-block;
-    margin: 0 10px;
-    font-weight: 700;
-    color: #555;
-    font-size: 18px;
-  }
-  #footer { height: auto; min-height: 70px; padding: 12px 0; }
-  @media print { .cad-site-links { display: none !important; } }
+  .cad-companion a.cad-btn:hover { background: #e7f1fa; }
+  .cad-companion a.cad-btn.here { background: #337ab7; color: #fff; }
+  .cad-companion .arrow { margin: 0 8px; font-weight: 700; color: #555; }
+  @media print { .cad-companion { display: none !important; } }
   /* Same origin as key.rect: keyboard-bg content box (after 9px padding) */
   svg.zone-overlay {
     position: absolute;
@@ -127,15 +122,6 @@ All rights reserved.
                   'ctrl-83' : 'save($event)' }">
 <style type="text/css" ng-bind-html="customStyles"></style>
 <div id="wrap">
-<div class="cad-site-links">
-  <div class="cad-site-links-inner">
-    <a class="here" href="https://avaviel.github.io/keyboard-layout-editor-CAD/" target="_blank" rel="noopener noreferrer">This site: KLE CAD</a>
-    <span class="arrow" aria-hidden="true">&rarr;</span>
-    <a href="https://avaviel.github.io/YAKB-cad-helper-addons/" target="_blank" rel="noopener noreferrer">YAKB CAD Helper</a>
-    <span class="arrow" aria-hidden="true">&rarr;</span>
-    <a href="https://github.com/Avaviel/keyboard-layout-editor-CAD" target="_blank" rel="noopener noreferrer">Source</a>
-  </div>
-</div>
 <div id='body_all'><!-- this wrapper is to allow the magic that prints just the summary -->
 <!--***********************************************
 Nav Bar / Header
@@ -990,6 +976,13 @@ Nav Bar / Header
              ng-change="updateFromSerialized()"
              ng-class="{error:deserializeException!==''}"></div>
       </div>
+      <div class="alert alert-info" style="margin-top:10px;margin-bottom:8px;text-align:left;">
+        CAD fields (<code>_z</code>, <code>_zi</code>, <code>_zones</code>) will <strong>not</strong> work on the official
+        <a href="https://www.keyboard-layout-editor.com" target="_blank" rel="noopener noreferrer">keyboard-layout-editor.com</a>.
+        Without those zone fields, this layout should still load there.
+        This editor is meant to work with
+        <a href="https://avaviel.github.io/YAKB-cad-helper-addons/" target="_blank" rel="noopener noreferrer">YAKB CAD Helper</a>.
+      </div>
       <div style='text-align:right;margin-top:4px;'>
         <div class="btn-group btn-group-xs" role="group">
           <button type="button" class="btn btn-success" ng-click="downloadJson()"><i class="fa fa-download"></i> Download JSON</button>
@@ -1121,19 +1114,27 @@ Footer
 ************************************************-->
 <div id="footer" ng-cloak>
 <div class="container">
-  <div class="text-muted credit" style="float:left">
-    KLE CAD v{{version}} &mdash; fork for plate outlines with YAKB CAD Helper<br/>
-    This site: <a href="https://avaviel.github.io/keyboard-layout-editor-CAD/" target="_blank" rel="noopener noreferrer">avaviel.github.io/keyboard-layout-editor-CAD</a><br/>
-    Companion: <a href="https://avaviel.github.io/YAKB-cad-helper-addons/" target="_blank" rel="noopener noreferrer">YAKB CAD Helper</a>
-    (<a href="https://github.com/Avaviel/YAKB-cad-helper-addons" target="_blank" rel="noopener noreferrer">source</a>)<br/>
-    CAD layouts (zones, <code>_z</code>, <code>_zones</code>) will <strong>not</strong> work on the official <a href="https://www.keyboard-layout-editor.com" target="_blank" rel="noopener noreferrer">keyboard-layout-editor.com</a><br/>
-    Upstream editor by Ian Prest (<a href='#' ng-click="showMarkdown('LICENSE.md', $event)">LICENSE</a>)
+  <div class="cad-companion">
+    <p>
+      Draw layouts and outline corners here, then paste the raw data into YAKB CAD Helper for plates and stamps.
+      Links open in a new tab.
+    </p>
+    <div class="cad-companion-links">
+      <a class="cad-btn here" href="https://avaviel.github.io/keyboard-layout-editor-CAD/" target="_blank" rel="noopener noreferrer">This site: KLE CAD</a>
+      <span class="arrow" aria-hidden="true">&rarr;</span>
+      <a class="cad-btn" href="https://avaviel.github.io/YAKB-cad-helper-addons/" target="_blank" rel="noopener noreferrer">YAKB CAD Helper</a>
+      <span class="arrow" aria-hidden="true">&rarr;</span>
+      <a class="cad-btn" href="https://github.com/Avaviel/keyboard-layout-editor-CAD" target="_blank" rel="noopener noreferrer">Source</a>
+    </div>
   </div>
-  <div style="float:right;">
+  <div style="float:right; text-align:right;">
     <a href="#" ng-click="showHelp($event)"><i class="fa fa-question-circle"></i> Help &amp; keyboard shortcuts</a><br/>
-    <a href="https://github.com/Avaviel/keyboard-layout-editor-CAD/issues" target="_blank"><i class="fa fa-bug"></i> Found a bug?</a><br/>
-    <a href="https://github.com/Avaviel/keyboard-layout-editor-CAD" target="_blank"><i class="fa fa-github"></i> Code hosted on GitHub</a><br/>
+    <a href="https://github.com/Avaviel/keyboard-layout-editor-CAD/issues" target="_blank" rel="noopener noreferrer"><i class="fa fa-bug"></i> Found a bug?</a><br/>
+    <a href="https://github.com/Avaviel/keyboard-layout-editor-CAD" target="_blank" rel="noopener noreferrer"><i class="fa fa-github"></i> Code hosted on GitHub</a><br/>
+    <span class="text-muted">KLE CAD v{{version}} &mdash; upstream by Ian Prest
+      (<a href='#' ng-click="showMarkdown('LICENSE.md', $event)">LICENSE</a>)</span>
   </div>
+  <div style="clear:both"></div>
 </div>
 </div>
 
