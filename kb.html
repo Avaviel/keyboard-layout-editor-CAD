@@ -33,12 +33,17 @@ All rights reserved.
     overflow: visible !important;
     white-space: nowrap !important;
     text-align: center !important;
-    font-size: 11px !important;
-    line-height: 1.1em !important;
+    vertical-align: middle !important;
+    color: #000 !important;
+    font-size: 10px !important;
+    line-height: 1em !important;
     max-height: none !important;
   }
+  #keyboard.markers-below .key { z-index: 10; }
   #keyboard.markers-below .key.cad-corner { z-index: 1; }
-  #keyboard.markers-below svg.zone-overlay { z-index: 2; }
+  #keyboard.markers-below .key.cad-corner.selected,
+  #keyboard.markers-below .key.cad-corner.hover { z-index: 11; }
+  #keyboard.markers-below svg.zone-overlay { z-index: 12; }
   #keyboard.markers-hidden .key.cad-corner { visibility: hidden; }
   /* Same origin as key.rect: keyboard-bg content box (after 9px padding) */
   svg.zone-overlay {

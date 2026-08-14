@@ -1569,15 +1569,15 @@
 			$scope.lastCornerZone = zone;
 			var index = $scope.nextCornerIndex(zone);
 			$scope.addKey({
-				width: 0.75,
-				height: 0.75,
-				width2: 0.75,
-				height2: 0.75,
+				width: 0.5,
+				height: 0.5,
+				width2: 0.5,
+				height2: 0.5,
 				decal: true,
 				cadZone: zone,
 				cadIndex: index,
 				color: $scope.zoneColor(zone),
-				default: { textColor: "#ffffff", textSize: 2 },
+				default: { textColor: "#000000", textSize: 2 },
 				textColor: [],
 				labels: ["", "", "", "", $serial.cornerLabel(zone, index)]
 			});
