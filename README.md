@@ -1,5 +1,14 @@
-keyboard-layout-editor
+keyboard-layout-editor-CAD
 ----------------------
+
+Fork of [ijprest/keyboard-layout-editor](https://github.com/ijprest/keyboard-layout-editor) for CAD / plate-outline work with [YAKB CAD Helper](https://github.com/Avaviel/YAKB-cad-helper-addons).
+
+**Live:** https://avaviel.github.io/keyboard-layout-editor-CAD/
+
+Upstream site: [keyboard-layout-editor.com](https://www.keyboard-layout-editor.com)
+
+---
+
 [Keyboard-layout-editor.com](https://www.keyboard-layout-editor.com) (KLE) is a
 web application that enables the editing of keyboard-layouts, i.e., the position
 and appearance of each physical key.
