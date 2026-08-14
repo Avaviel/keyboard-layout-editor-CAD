@@ -15,7 +15,16 @@ All rights reserved.
 <link rel="stylesheet" type="text/css" href="css/kb.css">
 <link rel="stylesheet" type="text/css" href="css/kbd-webfont.css">
 <style type="text/css">
-  #keyboard .cad-corner .keyborder { border-radius: 50% !important; }
+  /* Corners sit on top of keys so they can be placed on a keycap */
+  #keyboard .key.cad-corner { z-index: 40; }
+  #keyboard .key.cad-corner.selected,
+  #keyboard .key.cad-corner.hover { z-index: 50; }
+  /* Solid square (not a circle, not a transparent decal) */
+  #keyboard .cad-corner .keyborder {
+    border-radius: 2px !important;
+    border-style: solid !important;
+    border-width: 1px !important;
+  }
   #keyboard .cad-corner .keylabels { font-weight: bold; }
 </style>
 <script type="text/javascript" src="js/jquery.min.js"></script>
@@ -257,7 +266,7 @@ Nav Bar / Header
          class="key {{key.profile}}"
          ng-mouseover="hoveredKey=key"
          ng-mouseleave="hoveredKey=null"
-         ng-class="{hover: hoveredKey==key, selected: selectedKeys.indexOf(key)>=0, HOMING:key.nub}"
+         ng-class="{hover: hoveredKey==key, selected: selectedKeys.indexOf(key)>=0, HOMING:key.nub, 'cad-corner': key.cadZone}"
          ng-bind-html="key.html">
       </div>
     </div>

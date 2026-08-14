@@ -92,7 +92,7 @@ html, body {
 #keyboard .hover .keyborder, #keyboard .hover .decal .keyborder { border-color: green !important; border-style: solid; }
 #keyboard .selected .keyborder, #keyboard .selected .decal .keyborder { border-color: red !important; border-style: solid; }
 #keyboard .ghosted { opacity: 0.5; }
-#keyboard .decal .keyborder { border-style: none !important; background: transparent !important; }
+#keyboard .decal:not(.cad-corner) .keyborder { border-style: none !important; background: transparent !important; }
 #keyboard .hover .decal .keyborder,
 #keyboard .selected .decal .keyborder { border-style: dashed !important; border-width: 1px; }
 
