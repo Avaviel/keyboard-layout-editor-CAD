@@ -41,6 +41,48 @@ All rights reserved.
   }
   #keyboard.markers-hidden .key.cad-corner { visibility: hidden; }
   #keyboard.markers-hidden svg.zone-overlay { opacity: 1; }
+  .cad-site-links {
+    background: #fff8e1;
+    border-bottom: 2px solid #f0ad4e;
+    padding: 8px 12px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-user-select: text;
+    user-select: text;
+  }
+  .cad-site-links-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px 0;
+  }
+  .cad-site-links a {
+    display: inline-block;
+    padding: 4px 12px;
+    border: 1px solid #337ab7;
+    border-radius: 4px;
+    background: #fff;
+    color: #337ab7;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .cad-site-links a:hover { background: #e7f1fa; }
+  .cad-site-links a.here {
+    background: #337ab7;
+    color: #fff;
+  }
+  .cad-site-links a.here:hover { background: #286090; color: #fff; }
+  .cad-site-links .arrow {
+    display: inline-block;
+    margin: 0 10px;
+    font-weight: 700;
+    color: #555;
+    font-size: 18px;
+  }
+  #footer { height: auto; min-height: 70px; padding: 12px 0; }
+  @media print { .cad-site-links { display: none !important; } }
   /* Same origin as key.rect: keyboard-bg content box (after 9px padding) */
   svg.zone-overlay {
     position: absolute;
@@ -85,6 +127,15 @@ All rights reserved.
                   'ctrl-83' : 'save($event)' }">
 <style type="text/css" ng-bind-html="customStyles"></style>
 <div id="wrap">
+<div class="cad-site-links">
+  <div class="cad-site-links-inner">
+    <a class="here" href="https://avaviel.github.io/keyboard-layout-editor-CAD/" target="_blank" rel="noopener noreferrer">This site: KLE CAD</a>
+    <span class="arrow" aria-hidden="true">&rarr;</span>
+    <a href="https://avaviel.github.io/YAKB-cad-helper-addons/" target="_blank" rel="noopener noreferrer">YAKB CAD Helper</a>
+    <span class="arrow" aria-hidden="true">&rarr;</span>
+    <a href="https://github.com/Avaviel/keyboard-layout-editor-CAD" target="_blank" rel="noopener noreferrer">Source</a>
+  </div>
+</div>
 <div id='body_all'><!-- this wrapper is to allow the magic that prints just the summary -->
 <!--***********************************************
 Nav Bar / Header
@@ -1072,10 +1123,10 @@ Footer
 <div class="container">
   <div class="text-muted credit" style="float:left">
     KLE CAD v{{version}} &mdash; fork for plate outlines with YAKB CAD Helper<br/>
-    This site: <a href="https://avaviel.github.io/keyboard-layout-editor-CAD/">avaviel.github.io/keyboard-layout-editor-CAD</a><br/>
-    Companion: <a href="https://avaviel.github.io/YAKB-cad-helper-addons/">YAKB CAD Helper</a>
-    (<a href="https://github.com/Avaviel/YAKB-cad-helper-addons">source</a>)<br/>
-    CAD layouts (zones, <code>_z</code>, <code>_zones</code>) will <strong>not</strong> work on the official <a href="https://www.keyboard-layout-editor.com" target="_blank">keyboard-layout-editor.com</a><br/>
+    This site: <a href="https://avaviel.github.io/keyboard-layout-editor-CAD/" target="_blank" rel="noopener noreferrer">avaviel.github.io/keyboard-layout-editor-CAD</a><br/>
+    Companion: <a href="https://avaviel.github.io/YAKB-cad-helper-addons/" target="_blank" rel="noopener noreferrer">YAKB CAD Helper</a>
+    (<a href="https://github.com/Avaviel/YAKB-cad-helper-addons" target="_blank" rel="noopener noreferrer">source</a>)<br/>
+    CAD layouts (zones, <code>_z</code>, <code>_zones</code>) will <strong>not</strong> work on the official <a href="https://www.keyboard-layout-editor.com" target="_blank" rel="noopener noreferrer">keyboard-layout-editor.com</a><br/>
     Upstream editor by Ian Prest (<a href='#' ng-click="showMarkdown('LICENSE.md', $event)">LICENSE</a>)
   </div>
   <div style="float:right;">
