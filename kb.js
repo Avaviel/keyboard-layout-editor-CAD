@@ -831,8 +831,8 @@
 		function validate(key,prop,value) {
 			var v = {
 				_ : function() { return value; },
-				x : function() { return Math.max(0, Math.min(36, value)); },
-				y : function() { return Math.max(0, Math.min(36, value)); },
+				x : function() { return Math.max(0, Math.min(1000, value)); },
+				y : function() { return Math.max(0, Math.min(1000, value)); },
 				x2 : function() { return Math.max(-Math.abs(key.width-key.width2), Math.min(Math.abs(key.width-key.width2), value)); },
 				y2 : function() { return Math.max(-Math.abs(key.height-key.height2), Math.min(Math.abs(key.height-key.height2), value)); },
 				width : function() { return Math.max(0.5, Math.min(24, value)); },
@@ -841,8 +841,8 @@
 				height2 : function() { return Math.max(0.5, Math.min(24, value)); },
 				textSize : function() { return Math.max(1, Math.min(9, value)); },
 				rotation_angle : function() { return Math.max(-180, Math.min(180, value)); },
-				rotation_x : function() { return Math.max(0, Math.min(36, value)); },
-				rotation_y : function() { return Math.max(0, Math.min(36, value)); },
+				rotation_x : function() { return Math.max(0, Math.min(1000, value)); },
+				rotation_y : function() { return Math.max(0, Math.min(1000, value)); },
 				cadZone : function() { return Math.max(1, Math.min(99, Math.round(value))); },
 				cadIndex : function() { return Math.max(0, Math.min(99, Math.round(value))); },
 				"meta.radii" : function() { var ndx = value.indexOf(';'); return ndx>=0 ? value.substring(0,ndx) : value; }

@@ -448,7 +448,7 @@ Nav Bar / Header
           <div class="col-md-9 col-lg-9">
             <div class="form-inline hint--top hint--rounded"
                  data-hint="Specify the X position of the keycap. An X-offset can also be specified to indicate how non-rectangular keys should be displayed.">
-              <kbd-multi-numbox field="x" size="6" min="0" max="36" step='{{moveStep}}'></kbd-multi-numbox>
+              <kbd-multi-numbox field="x" size="6" min="0" max="1000" step='{{moveStep}}'></kbd-multi-numbox>
               <div class="form-group form-group-sm"> + </div>
               <kbd-multi-numbox field="x2" size="6" min="-6" max="6" step='{{moveStep}}' kbd-disable="multi.decal"></kbd-multi-numbox>
             </div>
@@ -461,7 +461,7 @@ Nav Bar / Header
           <div class="col-md-9 col-lg-9">
             <div class="form-inline hint--top hint--rounded"
                  data-hint="Specify the Y position of the keycap. A Y-offset can also be specified to indicate how non-rectangular keys should be displayed.">
-              <kbd-multi-numbox field="y" size="6" min="0" max="36" step='{{moveStep}}'></kbd-multi-numbox>
+              <kbd-multi-numbox field="y" size="6" min="0" max="1000" step='{{moveStep}}'></kbd-multi-numbox>
               <div class="form-group form-group-sm"> + </div>
               <kbd-multi-numbox field="y2" size="6" min="-6" max="6" step='{{moveStep}}' kbd-disable="multi.decal"></kbd-multi-numbox>
             </div>
@@ -494,9 +494,9 @@ Nav Bar / Header
                  data-hint="Specify the angle (in degrees) by which to rotate the keycaps, and the x &amp; y coordinates of the center of rotation.">
               <kbd-multi-numbox field="rotation_angle" size="3" min="-180" max="180" step='{{rotateStep}}'></kbd-multi-numbox>
               <div class="form-group form-group-sm"> &#176; </div>
-              <kbd-multi-numbox field="rotation_x" size="6" min="0" max="36" step='{{moveStep}}'></kbd-multi-numbox>
+              <kbd-multi-numbox field="rotation_x" size="6" min="0" max="1000" step='{{moveStep}}'></kbd-multi-numbox>
               <div class="form-group form-group-sm"> , </div>
-              <kbd-multi-numbox field="rotation_y" size="6" min="0" max="36" step='{{moveStep}}'></kbd-multi-numbox>
+              <kbd-multi-numbox field="rotation_y" size="6" min="0" max="1000" step='{{moveStep}}'></kbd-multi-numbox>
             </div>
           </div>
         </div>
