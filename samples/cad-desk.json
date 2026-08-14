@@ -1,0 +1,18 @@
+[
+  {
+    "name": "CAD desk (split islands)",
+    "notes": "Example multi-island board for YAKB CAD. Use Add Corner on each island (one zone per piece). Outline corners will be added to this sample later."
+  },
+  [{"y":-0.25,"x":31.5,"w":2},"Napping"],
+  [{"y":-0.25},"~\n`","!\n1","@\n2","#\n3","$\n4","%\n5",{"x":3},"^\n6","&\n7","*\n8","(\n9",")\n0","_\n-","+\n=",{"w":2},"delete",{"x":1.75},"prt2","prt","PgUp",{"x":1.75},"Num Lock","/","*","-",{"x":8,"a":7},"","","",""],
+  [{"y":-0.5,"x":30.5,"a":4,"w":2},"Focus\nWork",{"w":2},"Napping"],
+  [{"y":-0.5,"w":1.5},"tab","Q","W","E","R","T",{"x":3},"Y","U","I","O","P","{\n[","}\n]",{"w":1.5},"|\n\\",{"x":1.75},"Delete","End","PgDn",{"x":1.75},"7\nHome","8\n↑","9\nPgUp",{"h":2},"+",{"x":8,"a":7},"","","",""],
+  [{"y":-0.5,"x":30.5,"a":4,"w":2},"Sleeping",{"w":2},"Freeze\nIce"],
+  [{"y":-0.5,"w":1.75},"caps lock","A","S","D","F","G",{"x":3},"H","J","K","L",":\n;","\"\n'",{"w":2.25},"return",{"x":6.5},"4\n←","5","6\n→",{"x":9},"Lights\nOff","Desk\nLight","Ambient","Play\nPause"],
+  [{"y":-0.5,"x":30.5,"w":2},"Relax\nMovie",{"w":2},"Morning\nWake"],
+  [{"y":-0.5,"w":2.25},"shift","Z","X","C","V","B",{"x":2},"B","N","M","<\n,",">\n.","?\n/",{"w":2.75},"shift",{"x":2.75},"↑",{"x":2.75},"1\nEnd","2\n↓","3\nPgDn",{"h":2},"Enter"],
+  [{"y":-0.75,"x":37},"DND","Desk\nPresence",{"a":7},""],
+  [{"y":-0.5,"x":31.5,"a":4,"w":2},"Focus\nWork"],
+  [{"y":-0.75,"w":1.25},"control",{"w":1.25},"⌘\ncommand",{"w":1.25},"⌥\nalt",{"a":7,"w":2.75},"",{"x":3.75,"w":2.75},"",{"a":4,"w":1.25},"⌥\nalt",{"w":1.25},"⌘\ncommand",{"w":1.25},"menu",{"w":1.25},"control",{"x":1.75},"←","↓","→",{"x":1.75,"w":2},"0\nIns",".\nDel"],
+  [{"y":-0.75,"x":37,"a":7},"","",""]
+]

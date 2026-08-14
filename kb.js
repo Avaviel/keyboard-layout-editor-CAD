@@ -608,6 +608,66 @@
 			$scope.kbFullHeight = bottom;
 			if($scope.keyboard.meta.name || $scope.keyboard.meta.author)
 				$scope.kbFullHeight += 32;
+			$scope.refreshZoneOverlay();
+		};
+
+		$scope.zoneOverlay = [];
+		$scope.refreshZoneOverlay = function() {
+			var UNIT = 54;
+			var byZone = {};
+			($scope.keys() || []).forEach(function(key) {
+				if (!(key.cadZone > 0)) { return; }
+				var cx = (key.x + (key.width || 1) / 2) * UNIT;
+				var cy = (key.y + (key.height || 1) / 2) * UNIT;
+				if (key.rotation_angle) {
+					var ox = (key.rotation_x || 0) * UNIT;
+					var oy = (key.rotation_y || 0) * UNIT;
+					var rad = key.rotation_angle * Math.PI / 180;
+					var dx = cx - ox, dy = cy - oy;
+					cx = ox + dx * Math.cos(rad) - dy * Math.sin(rad);
+					cy = oy + dx * Math.sin(rad) + dy * Math.cos(rad);
+				}
+				if (!byZone[key.cadZone]) { byZone[key.cadZone] = []; }
+				byZone[key.cadZone].push({ index: key.cadIndex | 0, x: cx, y: cy });
+			});
+			var lines = [];
+			Object.keys(byZone).forEach(function(z) {
+				var pts = byZone[z].sort(function(a, b) { return a.index - b.index; });
+				if (pts.length < 2) { return; }
+				lines.push({
+					zone: +z,
+					points: pts.map(function(p) { return p.x + "," + p.y; }).join(" "),
+					color: $scope.zoneColor(+z)
+				});
+			});
+			$scope.zoneOverlay = lines;
+		};
+
+		$scope.usedZones = function() {
+			var set = {};
+			($scope.keys() || []).forEach(function(key) {
+				if (key.cadZone > 0) { set[key.cadZone] = true; }
+			});
+			return Object.keys(set).map(Number).sort(function(a, b) { return a - b; });
+		};
+		$scope.cornersInZone = function(zone) {
+			var n = 0;
+			($scope.keys() || []).forEach(function(key) {
+				if ((key.cadZone | 0) === zone) { n++; }
+			});
+			return n;
+		};
+		$scope.ensureZoneMeta = function(zone) {
+			if (!$scope.meta._zones) { $scope.meta._zones = {}; }
+			if (!$scope.keyboard.meta._zones) { $scope.keyboard.meta._zones = $scope.meta._zones; }
+			var z = String(zone);
+			if (!$scope.meta._zones[z]) { $scope.meta._zones[z] = { fillet: 0 }; }
+			return $scope.meta._zones[z];
+		};
+		$scope.updateZoneSettings = function() {
+			transaction("zone-settings", function() {
+				$scope.keyboard.meta._zones = angular.copy($scope.meta._zones || {});
+			});
 		};
 
 		function updateFromCss(css) {
@@ -716,24 +776,14 @@
 		} else if($location.path()[0] === '/' && $location.path().length > 1) {
 			loadAndRender($location.path());
 		} else {
-			// Some simple default content... just a numpad
-			$scope.deserializeAndRender([
-				["Num Lock","/","*","-",
-					{x:0.25,f:4,w:14,h:5,d:true},"<h5><b>Getting Started with Keyboard-Layout-Editor.com</b></h5>"+
-					"<p>Keyboard-layout-editor.com is a web application that enables the editing of keyboard-layouts, i.e., the position and appearance of each physical key.</p>"+
-					"<p>Start by exploring the presets and samples from the menu-bar to give you an idea of the possibilities.  Once you are ready to start designing your own keyboard, just load one of the presets and start customizing it!  Some tips:</p>"+
-					"<ul><li>The selected keys can be modified on the <i>Properties</i> tab.</li>"+
-					"<li>The <i>Keyboard Properties</i> tab lets you edit the keyboard background and keyboard metadata.</li>"+
-					"<li>The <i>Custom Styles</i> tab lets you write advanced CSS styling rules.</li>"+
-					"<li>Don't forget the <i>Color Swatches</i> and <i>Character Picker</i> menu items!  These give you easy access to colors and symbol characters, respectively.</li>"+
-					"<li>There are a lot of available keyboard shortcuts; press '?' or 'F1' to see a list.</li></ul>"+
-					"<p>When you're ready to save your layout, simply 'Sign In' with your <a href='https://www.github.com'>GitHub</a> account and click the <i>Save</i> button.  Your layout will be saved in a GitHub Gist.</p>"+
-					"<p>Have fun!</p>"],
-				[{f:3},"7\nHome","8\n↑","9\nPgUp",{h:2},"+"],
-				["4\n←","5","6\n→"],
-				["1\nEnd","2\n↓","3\nPgDn",{h:2},"Enter"],
-				[{w:2},"0\nIns",".\nDel"]
-			]);
+			$http.get('samples/cad-desk.json').success(function(data) {
+				$scope.deserializeAndRender(data);
+				updateSerialized();
+				resetUndoStack();
+				$scope.dirty = false;
+			}).error(function() {
+				$scope.deserializeAndRender([]);
+			});
 		}
 
 		// Undo/redo support

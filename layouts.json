@@ -126,6 +126,7 @@
 	],
 
 	"samples" : {
+		"CAD desk (split islands)" : "/samples/cad-desk.json",
 		"Apple Wireless" : "/samples/apple-wireless.json",
 		"GB: CCnG" : "/samples/gb-ccng",
 		"GB: Retro DSA" : "/samples/gb-retro-dsa",

@@ -15,6 +15,7 @@ All rights reserved.
 <link rel="stylesheet" type="text/css" href="css/kb.css">
 <link rel="stylesheet" type="text/css" href="css/kbd-webfont.css">
 <style type="text/css">
+  #keyboard-bg { position: relative; }
   /* Corners sit on top of keys so they can be placed on a keycap */
   #keyboard .key.cad-corner { z-index: 40; }
   #keyboard .key.cad-corner.selected,
@@ -26,6 +27,14 @@ All rights reserved.
     border-width: 1px !important;
   }
   #keyboard .cad-corner .keylabels { font-weight: bold; }
+  svg.zone-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+    z-index: 30;
+    overflow: visible;
+  }
 </style>
 <script type="text/javascript" src="js/jquery.min.js"></script>
 <script type="text/javascript" src="js/ace.js"></script>
@@ -269,6 +278,15 @@ Nav Bar / Header
          ng-class="{hover: hoveredKey==key, selected: selectedKeys.indexOf(key)>=0, HOMING:key.nub, 'cad-corner': key.cadZone}"
          ng-bind-html="key.html">
       </div>
+      <svg class="zone-overlay" ng-attr-width="{{kbWidth}}" ng-attr-height="{{kbHeight}}">
+        <polygon ng-repeat="line in zoneOverlay"
+                 ng-attr-points="{{line.points}}"
+                 fill="none"
+                 ng-attr-stroke="{{line.color}}"
+                 stroke-width="2"
+                 stroke-linejoin="round"
+                 stroke-dasharray="6 4"></polygon>
+      </svg>
     </div>
 
     <div style="line-height:1.2em; padding:3px 5px;" ng-hide="!keyboard.meta.name &amp;&amp; !keyboard.meta.author">
@@ -288,6 +306,7 @@ Nav Bar / Header
   <!-- Tab strip -->
   <ul class="nav nav-tabs" ng-cloak>
     <li ng-class="{active:selTab==0}"><a ng-click="selTab=0" data-toggle="tab"><i class="fa fa-edit"></i> Properties</a></li>
+    <li ng-class="{active:selTab==6}"><a ng-click="selTab=6" data-toggle="tab"><i class="fa fa-th-large"></i> Zones</a></li>
     <li ng-class="{active:selTab==1}"><a ng-click="selTab=1" data-toggle="tab"><i class="fa fa-keyboard-o"></i> Keyboard Properties</a></li>
     <li ng-class="{active:selTab==3}"><a ng-click="selTab=3" data-toggle="tab"><i class="fa fa-file-text-o"></i> Custom Styles</a></li>
     <li ng-class="{active:selTab==2}"><a ng-click="selTab=2" data-toggle="tab"><i class="fa fa-code"></i> Raw data</a></li>
@@ -643,6 +662,38 @@ Nav Bar / Header
           <i class="fa fa-info-circle"></i> Click on a glyph to see the HTML code for that glyph.  You can also drag glyphs to the legend edit-boxes to assign them to the legend.
         </alert>
       </div>
+    </div>
+
+    <!-- ZONE SETTINGS -->
+    <div id="zonesettings" ng-class="{hidden:selTab!=6}">
+      <form class="form-horizontal col-sm-12 col-md-10 col-lg-8">
+        <p class="help-block">
+          Each <strong>zone</strong> is one outline island. Corners with the same zone are connected in order
+          (the dashed line on the board). Rounding is stored with the layout for YAKB to apply per zone.
+        </p>
+        <div ng-show="usedZones().length==0" class="alert alert-info">
+          No corners yet. Use <strong>Add Corner</strong> to start a zone.
+        </div>
+        <div class="form-group form-group-sm" ng-repeat="z in usedZones()" ng-init="ensureZoneMeta(z)">
+          <label class="control-label col-md-3 col-lg-2 text-nowrap">
+            <span class="label" ng-style="{'background-color': zoneColor(z), color:'#fff'}">Zone {{z}}</span>
+          </label>
+          <div class="col-md-9 col-lg-10">
+            <div class="form-inline">
+              <div class="form-group form-group-sm">
+                <label class="control-label" style="padding-right:8px" for="zone-fillet-{{z}}">Rounding (mm)</label>
+                <input id="zone-fillet-{{z}}" class="form-control input-sm" type="number" min="0" max="50" step="0.1"
+                       style="max-width:80px"
+                       ng-model="meta._zones[z].fillet"
+                       ng-change="updateZoneSettings()">
+              </div>
+              <span class="help-block" style="display:inline; margin-left:12px;">
+                {{cornersInZone(z)}} corners
+              </span>
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
 
     <!-- KEYBOARD PROPERTIES EDITOR -->
