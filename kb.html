@@ -39,12 +39,8 @@ All rights reserved.
     line-height: 1em !important;
     max-height: none !important;
   }
-  #keyboard.markers-below .key { z-index: 10; }
-  #keyboard.markers-below .key.cad-corner { z-index: 1; }
-  #keyboard.markers-below .key.cad-corner.selected,
-  #keyboard.markers-below .key.cad-corner.hover { z-index: 11; }
-  #keyboard.markers-below svg.zone-overlay { z-index: 12; }
   #keyboard.markers-hidden .key.cad-corner { visibility: hidden; }
+  #keyboard.markers-hidden svg.zone-overlay { opacity: 1; }
   /* Same origin as key.rect: keyboard-bg content box (after 9px padding) */
   svg.zone-overlay {
     position: absolute;
@@ -104,7 +100,7 @@ Nav Bar / Header
     </button>
 
     <!-- Main branding icon/title -->
-    <a class="navbar-brand" href="#"><i class="fa fa-keyboard-o"></i> KLE CAD</a>
+    <a class="navbar-brand" href="https://avaviel.github.io/keyboard-layout-editor-CAD/"><i class="fa fa-keyboard-o"></i> KLE CAD</a>
   </div>
   <div class="collapse navbar-collapse navbar-ex1-collapse">
 
@@ -224,7 +220,7 @@ Nav Bar / Header
   </div>
   <div class="btn-group">
     <button type="button" class="btn btn-default" ng-click="cycleMarkerLayer()"
-            title="Cycle outline markers: on top of keys, behind keys, or hidden (outline stays).">
+            title="Hide or show outline marker boxes. The dashed outline stays fully visible.">
       <i class="fa fa-eye"></i> {{markerLayerLabel()}}
     </button>
   </div>
@@ -262,7 +258,7 @@ Nav Bar / Header
   Main Keyboard Preview/Editor area
   ************************************************-->
   <div id="keyboard" ng-cloak tabindex="0"
-     ng-class="{'markers-below': markerLayer==='below', 'markers-hidden': markerLayer==='hidden'}"
+     ng-class="{'markers-hidden': markerLayer==='hidden'}"
      ui-keydown="{ left:'moveKeys(-moveStep,0,$event)',
                  right:'moveKeys(moveStep,0,$event)',
                  up:'moveKeys(0,-moveStep,$event)',
@@ -1075,14 +1071,17 @@ Footer
 <div id="footer" ng-cloak>
 <div class="container">
   <div class="text-muted credit" style="float:left">
-    Keyboard Layout Editor v{{version}} (<a href='#' ng-click="showMarkdown('CHANGELOG.md', $event)">changelog</a>)<br/>
-    Copyright &copy; 2013-2018 &mdash; Ian Prest (<a href='#' ng-click="showMarkdown('CONTRIB.md', $event)">and contributors</a>)<br/>
-    All rights reserved. (<a href='#' ng-click="showMarkdown('LICENSE.md', $event)">LICENSE</a>)
+    KLE CAD v{{version}} &mdash; fork for plate outlines with YAKB CAD Helper<br/>
+    This site: <a href="https://avaviel.github.io/keyboard-layout-editor-CAD/">avaviel.github.io/keyboard-layout-editor-CAD</a><br/>
+    Companion: <a href="https://avaviel.github.io/YAKB-cad-helper-addons/">YAKB CAD Helper</a>
+    (<a href="https://github.com/Avaviel/YAKB-cad-helper-addons">source</a>)<br/>
+    CAD layouts (zones, <code>_z</code>, <code>_zones</code>) will <strong>not</strong> work on the official <a href="https://www.keyboard-layout-editor.com" target="_blank">keyboard-layout-editor.com</a><br/>
+    Upstream editor by Ian Prest (<a href='#' ng-click="showMarkdown('LICENSE.md', $event)">LICENSE</a>)
   </div>
   <div style="float:right;">
     <a href="#" ng-click="showHelp($event)"><i class="fa fa-question-circle"></i> Help &amp; keyboard shortcuts</a><br/>
-    <a href="https://github.com/ijprest/keyboard-layout-editor/issues" target="_blank"><i class="fa fa-bug"></i> Found a bug?</a><br/>
-    <a href="https://github.com/ijprest/keyboard-layout-editor" target="_blank"><i class="fa fa-github"></i> Code hosted on GitHub</a><br/>
+    <a href="https://github.com/Avaviel/keyboard-layout-editor-CAD/issues" target="_blank"><i class="fa fa-bug"></i> Found a bug?</a><br/>
+    <a href="https://github.com/Avaviel/keyboard-layout-editor-CAD" target="_blank"><i class="fa fa-github"></i> Code hosted on GitHub</a><br/>
   </div>
 </div>
 </div>
@@ -1093,7 +1092,7 @@ Help Dialog
 <script type="text/ng-template" id="helpDialog.html">
   <div class="modal-header">
     <button type="button" class="close" ng-click="cancel()">&times;</button>
-    <h4 class="modal-title">How to use keyboard-layout-editor.com</h4>
+    <h4 class="modal-title">How to use KLE CAD</h4>
   </div>
   <div class="modal-body">
     <h5>Getting Started:</h5>

@@ -86,14 +86,10 @@
 		$scope.lastCornerZone = 1;
 		$scope.markerLayer = "above";
 		$scope.cycleMarkerLayer = function() {
-			var order = ["above", "below", "hidden"];
-			var i = order.indexOf($scope.markerLayer);
-			$scope.markerLayer = order[(i + 1) % order.length];
+			$scope.markerLayer = ($scope.markerLayer === "hidden") ? "above" : "hidden";
 		};
 		$scope.markerLayerLabel = function() {
-			if ($scope.markerLayer === "below") { return "Markers: Behind"; }
-			if ($scope.markerLayer === "hidden") { return "Markers: Hidden"; }
-			return "Markers: Top";
+			return ($scope.markerLayer === "hidden") ? "Markers: Hidden" : "Markers: Shown";
 		};
 
 		var zonePalette = ["#e91e63", "#2196f3", "#4caf50", "#ff9800", "#9c27b0", "#00bcd4", "#795548", "#607d8b"];
