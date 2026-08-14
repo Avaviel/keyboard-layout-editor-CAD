@@ -29,7 +29,7 @@
 		var customStylesTimer = false;
 
 		// The application version
-		$scope.version = "0.15";
+		$scope.version = "0.16";
 
 		// Github data
 		$scope.githubClientId = $location.host() === "localhost" ? "8b7b224a9e212c5c17e2" : "631d93caeaa61c9057ab";
@@ -76,6 +76,32 @@
 		$scope.sizeStep = 0.25;
 		$scope.moveStep = 0.25;
 		$scope.rotateStep = 15;
+		$scope.cornerZones = [1, 2, 3, 4, 5, 6, 7, 8];
+		$scope.lastCornerZone = 1;
+
+		var zonePalette = ["#e91e63", "#2196f3", "#4caf50", "#ff9800", "#9c27b0", "#00bcd4", "#795548", "#607d8b"];
+		$scope.zoneColor = function(zone) {
+			return zonePalette[(((zone || 1) - 1) % zonePalette.length + zonePalette.length) % zonePalette.length];
+		};
+		$scope.isCorner = function(key) {
+			return $serial.isCorner(key || $scope.multi);
+		};
+		$scope.nextCornerIndex = function(zone) {
+			var max = -1;
+			$scope.keys().forEach(function(key) {
+				if ((key.cadZone | 0) === zone) {
+					max = Math.max(max, key.cadIndex | 0);
+				}
+			});
+			return max + 1;
+		};
+		$scope.nextNewZone = function() {
+			var max = 0;
+			$scope.keys().forEach(function(key) {
+				if ((key.cadZone | 0) > max) { max = key.cadZone | 0; }
+			});
+			return max + 1;
+		};
 
 		// The keyboard data
 		$scope.keyboard = { keys: [], meta: {} };
@@ -817,6 +843,8 @@
 				rotation_angle : function() { return Math.max(-180, Math.min(180, value)); },
 				rotation_x : function() { return Math.max(0, Math.min(36, value)); },
 				rotation_y : function() { return Math.max(0, Math.min(36, value)); },
+				cadZone : function() { return Math.max(1, Math.min(99, Math.round(value))); },
+				cadIndex : function() { return Math.max(0, Math.min(99, Math.round(value))); },
 				"meta.radii" : function() { var ndx = value.indexOf(';'); return ndx>=0 ? value.substring(0,ndx) : value; }
 			};
 			return (v[prop] || v._)();
@@ -845,6 +873,15 @@
 				nub : function() { if(!key.decal) key[prop] = value; },
 				ghost : function() { if(!key.decal) key[prop] = value; },
 				decal : function() { key[prop] = value; key.x2 = key.y2 = 0; key.width2 = key.width; key.height2 = key.height; key.nub = key.stepped = key.ghost = false; },
+				cadZone : function() {
+					key.cadZone = value;
+					$serial.applyCornerMeta(key);
+					key.color = $scope.zoneColor(key.cadZone);
+				},
+				cadIndex : function() {
+					key.cadIndex = value;
+					$serial.applyCornerMeta(key);
+				},
 				rotation_angle : function() { key.rotation_angle = value; key.rotation_x = $scope.multi.rotation_x; key.rotation_y = $scope.multi.rotation_y; },
 				sm : function() { if(value===$scope.meta.switchMount) value=''; if(value != key.sm) { key.sm = value; key.sb = key.st = ''; } },
 				sb : function() { if(value===$scope.meta.switchBrand) value=''; if(value != key.sb) { key.sb = value; key.st = ''; } },
@@ -1264,6 +1301,9 @@
 						newKey.rotation_y = $scope.multi.rotation_y;
 					}
 					$.extend(newKey, proto);
+					if (newKey.cadZone) {
+						$serial.applyCornerMeta(newKey);
+					}
 					newKey.x += pos.x;
 					newKey.y += pos.y;
 					renderKey(newKey);
@@ -1286,6 +1326,33 @@
 			for(i = 0; i < count; ++i) {
 				$scope.addKey();
 			}
+		};
+
+		$scope.addCorner = function(zone) {
+			zone = parseInt(zone, 10);
+			if (!zone) {
+				if ($scope.isCorner($scope.multi) && $scope.multi.cadZone) {
+					zone = $scope.multi.cadZone;
+				} else {
+					zone = $scope.lastCornerZone || 1;
+				}
+			}
+			if (zone < 1) { zone = 1; }
+			$scope.lastCornerZone = zone;
+			var index = $scope.nextCornerIndex(zone);
+			$scope.addKey({
+				width: 0.5,
+				height: 0.5,
+				width2: 0.5,
+				height2: 0.5,
+				decal: true,
+				cadZone: zone,
+				cadIndex: index,
+				color: $scope.zoneColor(zone),
+				default: { textColor: "#ffffff", textSize: 3 },
+				textColor: [],
+				labels: ["", "", "", "", $serial.cornerLabel(zone, index)]
+			});
 		};
 
 		$scope.deserializeException = "";

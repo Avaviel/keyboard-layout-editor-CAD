@@ -107,7 +107,43 @@ var $serial = (typeof(exports) !== 'undefined') ? exports : {};
 		default: { textColor: "#000000", textSize: 3 },   // label defaults
 		color: "#cccccc", profile: "", nub: false,        // cap appearance
 		ghost: false, stepped: false, decal: false,       // miscellaneous options
-		sm: "", sb:"", st:""                              // switch
+		sm: "", sb:"", st:"",                             // switch
+		cadZone: 0, cadIndex: 0                           // CAD outline corner (0 = not a corner)
+	};
+
+	$serial.cornerLabel = function(zone, index) {
+		return "Z" + (zone || 1) + "." + (index || 0);
+	};
+	$serial.parseCornerLabel = function(key) {
+		var labels = (key && key.labels) || [];
+		for (var i = 0; i < labels.length; i++) {
+			var m = String(labels[i] || "").trim().match(/^Z(\d+)\.(\d+)$/i);
+			if (m) {
+				return { zone: parseInt(m[1], 10), index: parseInt(m[2], 10) };
+			}
+		}
+		return null;
+	};
+	$serial.isCorner = function(key) {
+		return !!(key && (((key.cadZone | 0) > 0) || $serial.parseCornerLabel(key)));
+	};
+	$serial.applyCornerMeta = function(key) {
+		if (!key) { return key; }
+		key.decal = true;
+		key.cadZone = Math.max(1, parseInt(key.cadZone, 10) || 1);
+		key.cadIndex = Math.max(0, parseInt(key.cadIndex, 10) || 0);
+		if (!key.labels) { key.labels = []; }
+		for (var i = 0; i < 12; i++) {
+			if (key.labels[i] && /^Z\d+\.\d+$/i.test(String(key.labels[i]).trim())) {
+				key.labels[i] = "";
+			}
+		}
+		key.labels[4] = $serial.cornerLabel(key.cadZone, key.cadIndex);
+		key.width2 = key.width;
+		key.height2 = key.height;
+		key.x2 = key.y2 = 0;
+		key.nub = key.stepped = key.ghost = false;
+		return key;
 	};
 
 	var _defaultMetaData = { backcolor: '#eeeeee', name: '', author: '', notes: '', background: undefined, radii: '', switchMount: '', switchBrand: '', switchType: '' };
@@ -267,6 +303,8 @@ var $serial = (typeof(exports) !== 'undefined') ? exports : {};
 			serializeProp(props, "n", key.nub || false, false);
 			serializeProp(props, "l", key.stepped || false, false);
 			serializeProp(props, "d", key.decal || false, false);
+			serializeProp(props, "_z", key.cadZone || 0, 0);
+			serializeProp(props, "_zi", key.cadIndex || 0, 0);
 			if(!isEmptyObject(props)) { row.push(props); }
 			current.labels = ordered.labels;
 			row.push(ordered.labels.join("\n").trimEnd());
@@ -319,6 +357,17 @@ var $serial = (typeof(exports) !== 'undefined') ? exports : {};
 								newKey.textColor[i] = undefined;
 						}
 
+						if (!newKey.cadZone) {
+							var parsedCorner = $serial.parseCornerLabel(newKey);
+							if (parsedCorner) {
+								newKey.cadZone = parsedCorner.zone;
+								newKey.cadIndex = parsedCorner.index;
+							}
+						}
+						if (newKey.cadZone) {
+							$serial.applyCornerMeta(newKey);
+						}
+
 						// Add the key!
 						keys.push(newKey);
 
@@ -327,6 +376,8 @@ var $serial = (typeof(exports) !== 'undefined') ? exports : {};
 						current.width = current.height = 1;
 						current.x2 = current.y2 = current.width2 = current.height2 = 0;
 						current.nub = current.stepped = current.decal = false;
+						current.cadZone = 0;
+						current.cadIndex = 0;
 
 					} else {
 						if(key.r != null) { if(k!=0) {deserializeError("'r' can only be used on the first key in a row", key);} current.rotation_angle = key.r; }
@@ -354,6 +405,8 @@ var $serial = (typeof(exports) !== 'undefined') ? exports : {};
 						if(key.n) { current.nub = key.n; }
 						if(key.l) { current.stepped = key.l; }
 						if(key.d) { current.decal = key.d; }
+						if(key._z != null) { current.cadZone = key._z; }
+						if(key._zi != null) { current.cadIndex = key._zi; }
 						if(key.g != null) { current.ghost = key.g; }
 						if(key.sm) { current.sm = key.sm; }
 						if(key.sb) { current.sb = key.sb; }

@@ -14,6 +14,10 @@ All rights reserved.
 <link rel="stylesheet" type="text/css" href="css/colorpicker.min.css">
 <link rel="stylesheet" type="text/css" href="css/kb.css">
 <link rel="stylesheet" type="text/css" href="css/kbd-webfont.css">
+<style type="text/css">
+  #keyboard .cad-corner .keyborder { border-radius: 50% !important; }
+  #keyboard .cad-corner .keylabels { font-weight: bold; }
+</style>
 <script type="text/javascript" src="js/jquery.min.js"></script>
 <script type="text/javascript" src="js/ace.js"></script>
 <script type="text/javascript" src="js/angular.min.js"></script>
@@ -142,6 +146,23 @@ Nav Bar / Header
       <li><a ng-click="addKeys(25)">Add 25 Keys</a></li>
       <li class="divider" ng-class="{hidden: !specialKeys}"></li>
       <li ng-repeat="(k,v) in specialKeys"><a ng-click="addKey(v)">{{k}}</a></li>
+    </ul>
+  </div>
+
+  <!-- Add Corner button w/dropdown -->
+  <div class="btn-group" dropdown>
+    <button type="button" class="btn btn-info" ng-click="addCorner()"
+            title="Add an outline corner. Drag it on the board, then set its zone.">
+      <i class="fa fa-plus-square"></i> Add Corner
+    </button>
+    <button type="button" class="btn btn-info dropdown-toggle" dropdown-toggle>
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+      <li class="dropdown-header">Add to zone</li>
+      <li ng-repeat="z in cornerZones"><a ng-click="addCorner(z)">Zone {{z}}</a></li>
+      <li class="divider"></li>
+      <li><a ng-click="addCorner(nextNewZone())">New zone ({{nextNewZone()}})</a></li>
     </ul>
   </div>
 
@@ -443,6 +464,24 @@ Nav Bar / Header
               <kbd-multi-numbox field="y" size="6" min="0" max="36" step='{{moveStep}}'></kbd-multi-numbox>
               <div class="form-group form-group-sm"> + </div>
               <kbd-multi-numbox field="y2" size="6" min="-6" max="6" step='{{moveStep}}' kbd-disable="multi.decal"></kbd-multi-numbox>
+            </div>
+          </div>
+        </div>
+
+        <!-- CAD outline corner -->
+        <div class="form-group form-group-sm" ng-show="isCorner(multi)">
+          <label class="control-label col-md-3 col-lg-3 text-nowrap">Outline:</label>
+          <div class="col-md-9 col-lg-9">
+            <div class="form-inline hint--top hint--rounded"
+                 data-hint="Corners in the same zone are connected in order to form one plate outline. Use a new zone for each split / island.">
+              <div class="form-group form-group-sm">
+                <label class="control-label" style="padding-right:6px" for="cadzone-editor">Zone</label>
+              </div>
+              <kbd-multi-numbox field="cadZone" size="4" min="1" max="99" step="1"></kbd-multi-numbox>
+              <div class="form-group form-group-sm">
+                <label class="control-label" style="padding-left:10px;padding-right:6px" for="cadindex-editor">Order</label>
+              </div>
+              <kbd-multi-numbox field="cadIndex" size="4" min="0" max="99" step="1"></kbd-multi-numbox>
             </div>
           </div>
         </div>
@@ -1205,7 +1244,7 @@ DOT.js Templates
 
 <!-- Keycap Template -->
 <script type="text/ng-template" id="keycap_html">
-  <div class='{{=key.ghost ? "ghosted" : ""}} {{=key.decal ? "decal" : ""}} keycap'
+  <div class='{{=key.ghost ? "ghosted" : ""}} {{=key.decal ? "decal" : ""}} {{=key.cadZone ? "cad-corner" : ""}} keycap'
     {{? key.rotation_angle }}
        style='transform:rotate({{=key.rotation_angle}}deg); transform-origin:{{=parms.origin_x}}px {{=parms.origin_y}}px;'
     {{?}}>
@@ -1278,7 +1317,7 @@ DOT.js Templates
 
 <!-- Keycap Template for SVG-->
 <script type="text/ng-template" id="keycap_svg">
-  <g class='{{=key.ghost ? "ghosted" : ""}} {{=key.decal ? "decal" : ""}} keycap'
+  <g class='{{=key.ghost ? "ghosted" : ""}} {{=key.decal ? "decal" : ""}} {{=key.cadZone ? "cad-corner" : ""}} keycap'
   {{? key.rotation_angle }}
      transform="rotate({{=key.rotation_angle}} {{=parms.origin_x}} {{=parms.origin_y}})"
   {{?}}>
