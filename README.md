@@ -5,6 +5,14 @@ Fork of [ijprest/keyboard-layout-editor](https://github.com/ijprest/keyboard-lay
 
 **Live:** https://avaviel.github.io/keyboard-layout-editor-CAD/
 
+GitHub Pages is served from the **`gh-pages`** branch (same pattern as YAKB). After changing editor files on `master`, publish with:
+
+```powershell
+powershell -File deploy-pages.ps1
+```
+
+That copies the static site plus generated `js/` / `css/` / `fonts/` onto `gh-pages`. Those folders are gitignored on `master` (they come from `make` / the official vendor set). If they are missing locally, the script downloads them from keyboard-layout-editor.com.
+
 Upstream site: [keyboard-layout-editor.com](https://www.keyboard-layout-editor.com)
 
 ---
