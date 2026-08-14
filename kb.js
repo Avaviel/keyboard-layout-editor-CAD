@@ -626,8 +626,23 @@
 				y: (key.y + (key.height || 1) / 2) * UNIT
 			};
 		}
+		function uniquePoints(pts, eps) {
+			var out = [];
+			eps = eps || 0.75;
+			var lim = eps * eps;
+			for (var i = 0; i < pts.length; i++) {
+				var p = pts[i], dup = false;
+				for (var j = 0; j < out.length; j++) {
+					var dx = p.x - out[j].x, dy = p.y - out[j].y;
+					if (dx * dx + dy * dy < lim) { dup = true; break; }
+				}
+				if (!dup) { out.push(p); }
+			}
+			return out;
+		}
 		function convexHull(pts) {
-			if (!pts || pts.length <= 2) { return pts ? pts.slice() : []; }
+			pts = uniquePoints(pts || []);
+			if (pts.length <= 2) { return pts.slice(); }
 			var sorted = pts.slice().sort(function(a, b) {
 				return (a.x === b.x) ? (a.y - b.y) : (a.x - b.x);
 			});
@@ -1832,6 +1847,10 @@
 				clipCopy.forEach(function(key,i) {
 					key.x += pos.x;
 					key.y += pos.y;
+					if (key.cadZone) {
+						key.cadIndex = $scope.nextCornerIndex(key.cadZone);
+						$serial.applyCornerMeta(key);
+					}
 					renderKey(key);
 					$scope.keys().push(key);
 					$scope.selectedKeys = clipCopy;
