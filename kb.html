@@ -15,7 +15,7 @@ All rights reserved.
 <link rel="stylesheet" type="text/css" href="css/kb.css">
 <link rel="stylesheet" type="text/css" href="css/kbd-webfont.css">
 <style type="text/css">
-  #keyboard-bg { position: relative; }
+  #keyboard #keyboard-bg { position: relative !important; }
   /* Corners sit on top of keys so they can be placed on a keycap */
   #keyboard .key.cad-corner { z-index: 40; }
   #keyboard .key.cad-corner.selected,
@@ -27,10 +27,11 @@ All rights reserved.
     border-width: 1px !important;
   }
   #keyboard .cad-corner .keylabels { font-weight: bold; }
+  /* Same origin as key.rect: keyboard-bg content box (after 9px padding) */
   svg.zone-overlay {
     position: absolute;
-    left: 0;
-    top: 0;
+    left: 9px;
+    top: 9px;
     pointer-events: none;
     z-index: 30;
     overflow: visible;
@@ -279,13 +280,14 @@ Nav Bar / Header
          ng-bind-html="key.html">
       </div>
       <svg class="zone-overlay" ng-attr-width="{{kbWidth}}" ng-attr-height="{{kbHeight}}">
-        <polygon ng-repeat="line in zoneOverlay"
-                 ng-attr-points="{{line.points}}"
-                 fill="none"
-                 ng-attr-stroke="{{line.color}}"
-                 stroke-width="2"
-                 stroke-linejoin="round"
-                 stroke-dasharray="6 4"></polygon>
+        <path ng-repeat="line in zoneOverlay"
+              ng-attr-d="{{line.d}}"
+              fill="none"
+              ng-attr-stroke="{{line.color}}"
+              stroke-width="2"
+              stroke-linejoin="round"
+              stroke-linecap="round"
+              stroke-dasharray="6 4"></path>
       </svg>
     </div>
 
@@ -668,9 +670,9 @@ Nav Bar / Header
     <div id="zonesettings" ng-class="{hidden:selTab!=6}">
       <form class="form-horizontal col-sm-12 col-md-10 col-lg-8">
         <p class="help-block">
-          Each <strong>zone</strong> is one outline island. The dashed line sits on the
-          <em>outer corners of the marker boxes</em>. Use <strong>Offset</strong> to push that line outward (mm).
-          Rounding is stored for YAKB.
+          Each <strong>zone</strong> is one outline island. At offset 0 the dashed line
+          goes through the <em>center of each marker box</em>. Raise <strong>Offset</strong>
+          to push it outward (mm). <strong>Rounding</strong> fillets the preview and the YAKB outline.
         </p>
         <div ng-show="usedZones().length==0" class="alert alert-info">
           No corners yet. Use <strong>Add Corner</strong> to start a zone.

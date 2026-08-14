@@ -74,7 +74,7 @@ html, body {
   border: dashed 1px #ddd;
 }
 #keyboard #keyboard-bg {
-  position: inherit;
+  position: relative;
   border: solid 1px #ddd;
   padding: 9px;
   box-sizing: content-box;
