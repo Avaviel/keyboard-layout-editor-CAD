@@ -612,28 +612,95 @@
 		};
 
 		$scope.zoneOverlay = [];
+		function rotatePoint(x, y, ox, oy, deg) {
+			if (!deg) { return { x: x, y: y }; }
+			var rad = deg * Math.PI / 180;
+			var dx = x - ox, dy = y - oy;
+			return {
+				x: ox + dx * Math.cos(rad) - dy * Math.sin(rad),
+				y: oy + dx * Math.sin(rad) + dy * Math.cos(rad)
+			};
+		}
+		function keyBoxCornersPx(key, unit) {
+			var x = key.x * unit, y = key.y * unit;
+			var w = (key.width || 1) * unit, h = (key.height || 1) * unit;
+			var ox = (key.rotation_x || 0) * unit, oy = (key.rotation_y || 0) * unit;
+			var ang = key.rotation_angle || 0;
+			return [
+				rotatePoint(x, y, ox, oy, ang),
+				rotatePoint(x + w, y, ox, oy, ang),
+				rotatePoint(x + w, y + h, ox, oy, ang),
+				rotatePoint(x, y + h, ox, oy, ang)
+			];
+		}
+		function farthestFrom(pts, cx, cy) {
+			var best = pts[0], bestD = -1;
+			for (var i = 0; i < pts.length; i++) {
+				var dx = pts[i].x - cx, dy = pts[i].y - cy;
+				var d = dx * dx + dy * dy;
+				if (d > bestD) { bestD = d; best = pts[i]; }
+			}
+			return best;
+		}
+		function offsetPolygon(pts, dist) {
+			if (!dist || pts.length < 2) { return pts; }
+			var n = pts.length, i, cx = 0, cy = 0;
+			for (i = 0; i < n; i++) { cx += pts[i].x; cy += pts[i].y; }
+			cx /= n; cy /= n;
+			var out = [];
+			for (i = 0; i < n; i++) {
+				var prev = pts[(i + n - 1) % n], cur = pts[i], next = pts[(i + 1) % n];
+				var n1x = cur.y - prev.y, n1y = prev.x - cur.x;
+				var n2x = next.y - cur.y, n2y = cur.x - next.x;
+				var m1x = (prev.x + cur.x) / 2, m1y = (prev.y + cur.y) / 2;
+				if ((m1x - cx) * n1x + (m1y - cy) * n1y < 0) { n1x = -n1x; n1y = -n1y; }
+				var m2x = (cur.x + next.x) / 2, m2y = (cur.y + next.y) / 2;
+				if ((m2x - cx) * n2x + (m2y - cy) * n2y < 0) { n2x = -n2x; n2y = -n2y; }
+				var l1 = Math.sqrt(n1x * n1x + n1y * n1y) || 1;
+				var l2 = Math.sqrt(n2x * n2x + n2y * n2y) || 1;
+				n1x /= l1; n1y /= l1; n2x /= l2; n2y /= l2;
+				var bx = n1x + n2x, by = n1y + n2y;
+				var bl = Math.sqrt(bx * bx + by * by);
+				if (bl < 1e-6) {
+					out.push({ x: cur.x + n1x * dist, y: cur.y + n1y * dist });
+					continue;
+				}
+				bx /= bl; by /= bl;
+				var miter = dist / Math.max(0.25, n1x * bx + n1y * by);
+				out.push({ x: cur.x + bx * miter, y: cur.y + by * miter });
+			}
+			return out;
+		}
 		$scope.refreshZoneOverlay = function() {
 			var UNIT = 54;
+			var MM_TO_PX = UNIT / 19.05;
 			var byZone = {};
 			($scope.keys() || []).forEach(function(key) {
 				if (!(key.cadZone > 0)) { return; }
-				var cx = (key.x + (key.width || 1) / 2) * UNIT;
-				var cy = (key.y + (key.height || 1) / 2) * UNIT;
-				if (key.rotation_angle) {
-					var ox = (key.rotation_x || 0) * UNIT;
-					var oy = (key.rotation_y || 0) * UNIT;
-					var rad = key.rotation_angle * Math.PI / 180;
-					var dx = cx - ox, dy = cy - oy;
-					cx = ox + dx * Math.cos(rad) - dy * Math.sin(rad);
-					cy = oy + dx * Math.sin(rad) + dy * Math.cos(rad);
-				}
 				if (!byZone[key.cadZone]) { byZone[key.cadZone] = []; }
-				byZone[key.cadZone].push({ index: key.cadIndex | 0, x: cx, y: cy });
+				byZone[key.cadZone].push({
+					index: key.cadIndex | 0,
+					corners: keyBoxCornersPx(key, UNIT)
+				});
 			});
 			var lines = [];
 			Object.keys(byZone).forEach(function(z) {
-				var pts = byZone[z].sort(function(a, b) { return a.index - b.index; });
-				if (pts.length < 2) { return; }
+				var items = byZone[z].sort(function(a, b) { return a.index - b.index; });
+				if (items.length < 2) { return; }
+				var cx = 0, cy = 0, count = 0, i, j;
+				for (i = 0; i < items.length; i++) {
+					for (j = 0; j < items[i].corners.length; j++) {
+						cx += items[i].corners[j].x;
+						cy += items[i].corners[j].y;
+						count++;
+					}
+				}
+				cx /= count; cy /= count;
+				var pts = items.map(function(item) { return farthestFrom(item.corners, cx, cy); });
+				var settings = ($scope.meta && $scope.meta._zones && $scope.meta._zones[z]) || {};
+				var offsetMm = parseFloat(settings.offset);
+				if (isNaN(offsetMm)) { offsetMm = 0; }
+				pts = offsetPolygon(pts, offsetMm * MM_TO_PX);
 				lines.push({
 					zone: +z,
 					points: pts.map(function(p) { return p.x + "," + p.y; }).join(" "),
@@ -661,13 +728,16 @@
 			if (!$scope.meta._zones) { $scope.meta._zones = {}; }
 			if (!$scope.keyboard.meta._zones) { $scope.keyboard.meta._zones = $scope.meta._zones; }
 			var z = String(zone);
-			if (!$scope.meta._zones[z]) { $scope.meta._zones[z] = { fillet: 0 }; }
+			if (!$scope.meta._zones[z]) { $scope.meta._zones[z] = { fillet: 0, offset: 0 }; }
+			if ($scope.meta._zones[z].offset == null) { $scope.meta._zones[z].offset = 0; }
+			if ($scope.meta._zones[z].fillet == null) { $scope.meta._zones[z].fillet = 0; }
 			return $scope.meta._zones[z];
 		};
 		$scope.updateZoneSettings = function() {
 			transaction("zone-settings", function() {
 				$scope.keyboard.meta._zones = angular.copy($scope.meta._zones || {});
 			});
+			$scope.refreshZoneOverlay();
 		};
 
 		function updateFromCss(css) {

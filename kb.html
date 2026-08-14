@@ -668,8 +668,9 @@ Nav Bar / Header
     <div id="zonesettings" ng-class="{hidden:selTab!=6}">
       <form class="form-horizontal col-sm-12 col-md-10 col-lg-8">
         <p class="help-block">
-          Each <strong>zone</strong> is one outline island. Corners with the same zone are connected in order
-          (the dashed line on the board). Rounding is stored with the layout for YAKB to apply per zone.
+          Each <strong>zone</strong> is one outline island. The dashed line sits on the
+          <em>outer corners of the marker boxes</em>. Use <strong>Offset</strong> to push that line outward (mm).
+          Rounding is stored for YAKB.
         </p>
         <div ng-show="usedZones().length==0" class="alert alert-info">
           No corners yet. Use <strong>Add Corner</strong> to start a zone.
@@ -681,7 +682,14 @@ Nav Bar / Header
           <div class="col-md-9 col-lg-10">
             <div class="form-inline">
               <div class="form-group form-group-sm">
-                <label class="control-label" style="padding-right:8px" for="zone-fillet-{{z}}">Rounding (mm)</label>
+                <label class="control-label" style="padding-right:8px" for="zone-offset-{{z}}">Offset (mm)</label>
+                <input id="zone-offset-{{z}}" class="form-control input-sm" type="number" min="-50" max="50" step="0.1"
+                       style="max-width:80px"
+                       ng-model="meta._zones[z].offset"
+                       ng-change="updateZoneSettings()">
+              </div>
+              <div class="form-group form-group-sm">
+                <label class="control-label" style="padding-left:12px;padding-right:8px" for="zone-fillet-{{z}}">Rounding (mm)</label>
                 <input id="zone-fillet-{{z}}" class="form-control input-sm" type="number" min="0" max="50" step="0.1"
                        style="max-width:80px"
                        ng-model="meta._zones[z].fillet"
