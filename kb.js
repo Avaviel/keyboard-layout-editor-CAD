@@ -12,6 +12,9 @@
 				if(elem.name) { slim.name = elem.name; }
 				if(elem.author) { slim.author = elem.author; }
 				if(elem._zones) { slim._zones = elem._zones; }
+				if(elem._layerNotes) { slim._layerNotes = elem._layerNotes; }
+				if(elem._layerOutlines) { slim._layerOutlines = elem._layerOutlines; }
+				if(elem._titleBlock) { slim._titleBlock = elem._titleBlock; }
 				if(Object.keys(slim).length) {
 					res.push($serial.toJsonL(slim));
 				}
@@ -21,7 +24,12 @@
 		});
 		return res.join(",\n")+"\n";
 	}
-	function fromJsonPretty(json) { return $serial.fromJsonL('['+json+']'); }
+	function fromJsonPretty(json) {
+		var src = $serial.quoteNumericKeys(String(json || "").replace(/^\uFEFF/, "").trim());
+		if (!src) { return []; }
+		if (src.charAt(0) === '[') { return $serial.fromJsonL(src); }
+		return $serial.fromJsonL('[' + src + ']');
+	}
 
 	// The angular module for our application
 	var kbApp = angular.module('kbApp', ["ngSanitize", "ngCookies", "ui.utils", "ui.bootstrap", "ui.bootstrap.tooltip", "ui.ace", "ngFileUpload", "ang-drag-drop", "colorpicker.module"], function($tooltipProvider) {
@@ -308,6 +316,51 @@
 				};
 				reader.readAsText(file[0]);
 			}
+		};
+
+		$scope.clipboardStatus = "";
+		function setClipboardStatus(msg) {
+			$scope.clipboardStatus = msg;
+			$timeout(function() {
+				if ($scope.clipboardStatus === msg) { $scope.clipboardStatus = ""; }
+			}, 2000);
+		}
+		$scope.copyRawData = function() {
+			var text = $scope.serialized || "";
+			if (navigator.clipboard && navigator.clipboard.writeText) {
+				navigator.clipboard.writeText(text).then(function() {
+					$scope.$apply(function() { setClipboardStatus("Copied"); });
+				}, function() {
+					$scope.$apply(function() { setClipboardStatus("Copy failed"); });
+				});
+				return;
+			}
+			setClipboardStatus(text ? "Copy failed" : "Nothing to copy");
+		};
+		$scope.pasteRawData = function() {
+			if (!navigator.clipboard || !navigator.clipboard.readText) {
+				setClipboardStatus("Paste from the Raw data tab");
+				$scope.selTab = 2;
+				return;
+			}
+			navigator.clipboard.readText().then(function(text) {
+				$scope.$apply(function() {
+					try {
+						$scope.serialized = text;
+						$scope.deserializeException = "";
+						transaction("paste", function() {
+							$scope.deserializeAndRender(fromJsonPretty(text), true);
+						});
+						$scope.unselectAll();
+						setClipboardStatus("Pasted");
+					} catch (e) {
+						$scope.deserializeException = e.toString();
+						setClipboardStatus("Paste failed");
+					}
+				});
+			}, function() {
+				$scope.$apply(function() { setClipboardStatus("Paste failed"); });
+			});
 		};
 
 		// count the keys

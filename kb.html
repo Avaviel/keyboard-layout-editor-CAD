@@ -64,7 +64,8 @@ All rights reserved.
     align-items: center;
     gap: 6px 0;
   }
-  .cad-companion a.cad-btn {
+  .cad-companion a.cad-btn,
+  .cad-companion button.cad-btn {
     display: inline-block;
     padding: 3px 10px;
     border: 1px solid #337ab7;
@@ -74,7 +75,8 @@ All rights reserved.
     font-weight: 700;
     text-decoration: none;
   }
-  .cad-companion a.cad-btn:hover { background: #e7f1fa; }
+  .cad-companion a.cad-btn:hover,
+  .cad-companion button.cad-btn:hover { background: #e7f1fa; }
   .cad-companion a.cad-btn.here { background: #337ab7; color: #fff; }
   .cad-companion .arrow { margin: 0 8px; font-weight: 700; color: #555; }
   @media print { .cad-companion { display: none !important; } }
@@ -985,6 +987,10 @@ Nav Bar / Header
       </div>
       <div style='text-align:right;margin-top:4px;'>
         <div class="btn-group btn-group-xs" role="group">
+          <button type="button" class="btn btn-default" ng-click="copyRawData()"><i class="fa fa-clipboard"></i> Copy</button>
+          <button type="button" class="btn btn-default" ng-click="pasteRawData()"><i class="fa fa-paste"></i> Paste</button>
+        </div>
+        <div class="btn-group btn-group-xs" role="group">
           <button type="button" class="btn btn-success" ng-click="downloadJson()"><i class="fa fa-download"></i> Download JSON</button>
           <button ngf-select="true" class="btn btn-success" ngf-change="uploadJson($files, $event)"><i class="fa fa-upload"></i> Upload JSON</button>
         </div>
@@ -1119,6 +1125,11 @@ Footer
       Draw layouts and outline corners here, then paste the raw data into YAKB CAD Helper for plates and stamps.
       Links open in a new tab.
     </p>
+    <div class="cad-companion-links" style="margin-bottom:8px;">
+      <button type="button" class="cad-btn" ng-click="copyRawData()" style="cursor:pointer;font-family:inherit;">Copy layout</button>
+      <button type="button" class="cad-btn" ng-click="pasteRawData()" style="cursor:pointer;font-family:inherit;">Paste layout</button>
+      <span ng-if="clipboardStatus" style="margin-left:8px;color:#337ab7;font-weight:700;">{{clipboardStatus}}</span>
+    </div>
     <div class="cad-companion-links">
       <a class="cad-btn here" href="https://avaviel.github.io/keyboard-layout-editor-CAD/" target="_blank" rel="noopener noreferrer">This site: KLE CAD</a>
       <span class="arrow" aria-hidden="true">&rarr;</span>

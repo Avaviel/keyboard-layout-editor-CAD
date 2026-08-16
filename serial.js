@@ -71,6 +71,14 @@ var $serial = (typeof(exports) !== 'undefined') ? exports : {};
 	];
 
 	// Lenient JSON reader/writer
+	function jsonlKey(key) {
+		if (/^[_a-zA-Z][_a-zA-Z0-9]*$/.test(key)) { return key; }
+		return angular.toJson(String(key));
+	}
+	function quoteNumericKeys(json) {
+		return String(json || "").replace(/([{,]\s*)(\d+)\s*:/g, '$1"$2":');
+	}
+	$serial.quoteNumericKeys = quoteNumericKeys;
 	$serial.toJsonL = function(obj) {
 		var res = [], key;
 		if(obj instanceof Array) {
@@ -78,7 +86,7 @@ var $serial = (typeof(exports) !== 'undefined') ? exports : {};
 			return '['+res.join(',')+']';
 		}
 		if(typeof obj === 'object') {
-			for(key in obj) {	if(obj.hasOwnProperty(key)) { res.push(key+':'+$serial.toJsonL(obj[key])); } }
+			for(key in obj) {	if(obj.hasOwnProperty(key)) { res.push(jsonlKey(key)+':'+$serial.toJsonL(obj[key])); } }
 			return '{'+res.join(',')+'}';
 		}
 		if(typeof obj === 'number') {
@@ -86,7 +94,7 @@ var $serial = (typeof(exports) !== 'undefined') ? exports : {};
 		}
 		return angular.toJson(obj);
 	};
-	$serial.fromJsonL = function(json) { return jsonl.parse(json); };
+	$serial.fromJsonL = function(json) { return jsonl.parse(quoteNumericKeys(json)); };
 
 	// function to sort the key array
 	$serial.sortKeys = function(keys) {
@@ -150,7 +158,7 @@ var $serial = (typeof(exports) !== 'undefined') ? exports : {};
 		return key;
 	};
 
-	var _defaultMetaData = { backcolor: '#eeeeee', name: '', author: '', notes: '', background: undefined, radii: '', switchMount: '', switchBrand: '', switchType: '', _zones: {} };
+	var _defaultMetaData = { backcolor: '#eeeeee', name: '', author: '', notes: '', background: undefined, radii: '', switchMount: '', switchBrand: '', switchType: '', _zones: {}, _layerNotes: undefined, _layerOutlines: undefined, _titleBlock: undefined };
 	$serial.defaultKeyProps = function() { return copy(_defaultKeyProps); };
 	$serial.defaultMetaData = function() { return copy(_defaultMetaData); };
 
