@@ -15,6 +15,7 @@
 				if(elem._layerNotes) { slim._layerNotes = elem._layerNotes; }
 				if(elem._layerOutlines) { slim._layerOutlines = elem._layerOutlines; }
 				if(elem._titleBlock) { slim._titleBlock = elem._titleBlock; }
+				if(elem._yakb) { slim._yakb = elem._yakb; }
 				if(Object.keys(slim).length) {
 					res.push($serial.toJsonL(slim));
 				}

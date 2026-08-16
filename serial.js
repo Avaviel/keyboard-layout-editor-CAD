@@ -158,7 +158,7 @@ var $serial = (typeof(exports) !== 'undefined') ? exports : {};
 		return key;
 	};
 
-	var _defaultMetaData = { backcolor: '#eeeeee', name: '', author: '', notes: '', background: undefined, radii: '', switchMount: '', switchBrand: '', switchType: '', _zones: {}, _layerNotes: undefined, _layerOutlines: undefined, _titleBlock: undefined };
+	var _defaultMetaData = { backcolor: '#eeeeee', name: '', author: '', notes: '', background: undefined, radii: '', switchMount: '', switchBrand: '', switchType: '', _zones: {}, _layerNotes: undefined, _layerOutlines: undefined, _titleBlock: undefined, _yakb: undefined };
 	$serial.defaultKeyProps = function() { return copy(_defaultKeyProps); };
 	$serial.defaultMetaData = function() { return copy(_defaultMetaData); };
 
