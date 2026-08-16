@@ -263,6 +263,17 @@ Nav Bar / Header
       <i class="fa fa-eye"></i> {{markerLayerLabel()}}
     </button>
   </div>
+  <div class="btn-group">
+    <button type="button" class="btn btn-default" ng-click="copyRawData()"
+            title="Copy the full layout (including CAD zones) to the clipboard.">
+      <i class="fa fa-clipboard"></i> Copy layout
+    </button>
+    <button type="button" class="btn btn-default" ng-click="pasteRawData()"
+            title="Paste a layout from the clipboard.">
+      <i class="fa fa-paste"></i> Paste layout
+    </button>
+  </div>
+  <span ng-if="clipboardStatus" class="btn-group" style="padding:6px 8px;color:#337ab7;font-weight:700;">{{clipboardStatus}}</span>
   <div class="btn-group" ng-hide="!user || !user.id || !currentGist || isStarred">
     <button type="button" class="btn btn-default" ng-click="setGistStar(currentGist, true)" ><i class="fa fa-star-o"></i> Star</button>
   </div>
