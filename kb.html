@@ -78,6 +78,25 @@ All rights reserved.
   .cad-companion a.cad-btn:hover,
   .cad-companion button.cad-btn:hover { background: #e7f1fa; }
   .cad-companion a.cad-btn.here { background: #337ab7; color: #fff; }
+  .cad-toolbar-help {
+    clear: both;
+    margin: 8px 0 10px 0;
+    padding: 8px 10px;
+    border: 1px solid #c5d9ec;
+    border-radius: 4px;
+    background: #f4f8fc;
+    color: #333;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .cad-field-help {
+    display: block;
+    margin: 6px 0 0 0;
+    color: #333;
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: normal;
+  }
   .cad-companion .arrow { margin: 0 8px; font-weight: 700; color: #555; }
   @media print { .cad-companion { display: none !important; } }
   /* Same origin as key.rect: keyboard-bg content box (after 9px padding) */
@@ -223,8 +242,7 @@ Nav Bar / Header
 
   <!-- Add Corner button w/dropdown -->
   <div class="btn-group" dropdown>
-    <button type="button" class="btn btn-info" ng-click="addCorner()"
-            title="Add an outline corner. Drag it on the board, then set its zone.">
+    <button type="button" class="btn btn-info" ng-click="addCorner()">
       <i class="fa fa-plus-square"></i> Add Corner
     </button>
     <button type="button" class="btn btn-info dropdown-toggle" dropdown-toggle>
@@ -258,18 +276,15 @@ Nav Bar / Header
     <button type="button" class="btn btn-default" ng-class="{disabled:!canPaste()}" ng-click="paste()"><i class="fa fa-paste"></i> Paste</button>
   </div>
   <div class="btn-group">
-    <button type="button" class="btn btn-default" ng-click="cycleMarkerLayer()"
-            title="Hide or show outline marker boxes. The dashed outline stays fully visible.">
+    <button type="button" class="btn btn-default" ng-click="cycleMarkerLayer()">
       <i class="fa fa-eye"></i> {{markerLayerLabel()}}
     </button>
   </div>
   <div class="btn-group">
-    <button type="button" class="btn btn-default" ng-click="copyRawData()"
-            title="Copy the full layout (including CAD zones) to the clipboard.">
+    <button type="button" class="btn btn-default" ng-click="copyRawData()">
       <i class="fa fa-clipboard"></i> Copy layout
     </button>
-    <button type="button" class="btn btn-default" ng-click="pasteRawData()"
-            title="Paste a layout from the clipboard.">
+    <button type="button" class="btn btn-default" ng-click="pasteRawData()">
       <i class="fa fa-paste"></i> Paste layout
     </button>
   </div>
@@ -282,10 +297,11 @@ Nav Bar / Header
   </div>
   <!-- Save button (right aligned) -->
   <div class="btn-group pull-right" ng-hide="user && user.id">
-    <button type="button" class="btn btn-success hint--bottom hint--no-animate disabled" data-hint="Sign in to save your layouts.">
+    <button type="button" class="btn btn-success disabled">
       <i class="fa fa-save"></i> Save
     </button>
   </div>
+  <span class="btn-group pull-right" ng-hide="user && user.id" style="padding:7px 8px;color:#555;">Sign in to save layouts.</span>
   <div class="btn-group pull-right" ng-hide="!user || !user.id">
     <button type="button" class="btn btn-success" ng-class="{disabled:!canSave()}" ng-click="save()">
       <i class="fa fa-save"></i> Save
@@ -303,6 +319,9 @@ Nav Bar / Header
     </ul>
   </div>
 
+  <div class="cad-toolbar-help">
+    <strong>Outline corners:</strong> Add Corner, drag the square onto the board, then set Zone (one zone per island) and Order (walk around that island). Hide markers if they get in the way — the dashed outline stays. Copy layout includes CAD zones for YAKB.
+  </div>
 
   <!--***********************************************
   Main Keyboard Preview/Editor area
@@ -573,8 +592,7 @@ Nav Bar / Header
         <div class="form-group form-group-sm" ng-show="isCorner(multi)">
           <label class="control-label col-md-3 col-lg-3 text-nowrap">Outline:</label>
           <div class="col-md-9 col-lg-9">
-            <div class="form-inline hint--top hint--rounded"
-                 data-hint="Corners in the same zone are connected in order to form one plate outline. Use a new zone for each split / island.">
+            <div class="form-inline">
               <div class="form-group form-group-sm">
                 <label class="control-label" style="padding-right:6px" for="cadzone-editor">Zone</label>
               </div>
@@ -584,6 +602,7 @@ Nav Bar / Header
               </div>
               <kbd-multi-numbox field="cadIndex" size="4" min="0" max="99" step="1"></kbd-multi-numbox>
             </div>
+            <span class="cad-field-help">Same zone = one plate outline. A new zone is another island. Order is the walk around that outline.</span>
           </div>
         </div>
 
@@ -1133,7 +1152,7 @@ Footer
 <div class="container">
   <div class="cad-companion">
     <p>
-      Draw layouts and outline corners here, then paste the raw data into YAKB CAD Helper for plates and stamps.
+      Draw keys and outline corners here. Add Corner, drag, set Zone and Order. Copy layout, then paste into YAKB CAD Helper for plates and stamps.
       Links open in a new tab.
     </p>
     <div class="cad-companion-links" style="margin-bottom:8px;">
@@ -1181,6 +1200,13 @@ Help Dialog
       <li>Try the keyboard shortcuts (described below); they make editing various properties much quicker.</li>
       <li>You can save your layout to the server by clicking the 'Save' button on the toolbar.</li>
       <li>You can save your layout locally by bookmarking the 'Permalink' (at the top of the page) in your bookmarks list.</li>
+    </ul>
+
+    <h5>Plate outlines (CAD):</h5>
+    <ul>
+      <li>Add Corner, drag the square, set Zone (one zone per island) and Order (walk around that island).</li>
+      <li>Hide markers if they get in the way; the dashed outline stays.</li>
+      <li>Copy layout includes CAD zones. Paste that raw data into YAKB CAD Helper.</li>
     </ul>
 
     <h5>Global Keyboard Shortcuts:</h5>
