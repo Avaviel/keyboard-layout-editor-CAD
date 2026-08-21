@@ -3,10 +3,6 @@ keyboard-layout-editor-CAD
 
 Fork of [ijprest/keyboard-layout-editor](https://github.com/ijprest/keyboard-layout-editor) for CAD / plate-outline work with [YAKB CAD Helper](https://github.com/Avaviel/YAKB-cad-helper-addons).
 
-**Live:** https://avaviel.github.io/keyboard-layout-editor-CAD/
-
-**Source:** https://github.com/Avaviel/keyboard-layout-editor-CAD
-
 CAD layouts (zone corners, `_z`, `_zones`) will **not** work on the official [keyboard-layout-editor.com](https://www.keyboard-layout-editor.com). Use this fork.
 
 GitHub Pages is served from the **`gh-pages`** branch (same pattern as YAKB). After changing editor files on `master`, publish with:
